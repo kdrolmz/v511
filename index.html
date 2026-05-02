@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ajanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-deep: #0e2a47;
+    --navy: #16456f;
+    --navy-soft: #2f6f9e;
+    --gold: #c3aa84;
+    --gold-bright: #d7bf9a;
+    --gold-deep: #9d835e;
+    --cream: #f7fbff;
+    --cream-warm: #edf5fb;
+    --paper: #ffffff;
+    --line: #bdd5e9;
+    --line-soft: #dceaf5;
+    --margin-red: #8aa8c4;
+    --ink: #102237;
+    --ink-soft: #263d54;
+    --ink-mid: #536b80;
+    --ink-faint: #7e92a4;
+    --c-payment: #b89f7a;
+    --c-todo: #91a9bd;
+    --c-work: #2f6f9e;
+    --c-personal: #a98f7b;
+    --c-health: #7c9a89;
+    --c-finance: #9f9274;
+    --c-urgent: #b37c72;
+    --c-empty: #b9c8d5;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { height:100%; overscroll-behavior:none; }
+  body {
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background:#dceaf5;
+    color:var(--ink);
+    overflow:hidden;
+    user-select:none;
+    -webkit-user-select:none;
+    font-feature-settings:"cv11", "ss01";
+  }
+
+  .phone {
+    width:100vw;
+    height:100vh;
+    height:100dvh;
+    background:var(--cream);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .status-bar {
+    background:linear-gradient(180deg, var(--navy-deep), #121b27);
+    color:rgba(244,234,215,0.88);
+    padding:env(safe-area-inset-top, 14px) 24px 8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:13px;
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
+    z-index:20;
+    letter-spacing:0.4px;
+  }
+
+  .page {
+    flex:1;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    background:
+      linear-gradient(transparent 0px, transparent 25px, var(--line-soft) 25px, var(--line-soft) 26px, transparent 26px),
+      var(--paper);
+    background-size:100% 26px;
+    position:relative;
+  }
+  .page::before {
+    content:'';
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:30px;
+    width:1px;
+    background:var(--margin-red);
+    opacity:0.22;
+    z-index:1;
+  }
+  .page::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background-image:
+      radial-gradient(circle at 18% 22%, rgba(22,69,111,0.035) 0%, transparent 45%),
+      radial-gradient(circle at 82% 78%, rgba(16,34,55,0.03) 0%, transparent 50%);
+    z-index:0;
+  }
+  .page-inner {
+    padding:12px 14px 92px 40px;
+    position:relative;
+    z-index:2;
+    min-height:100%;
+  }
+
+  .calendar-card {
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-radius:12px;
+    padding:14px 14px 12px;
+    margin-bottom:14px;
+    box-shadow:
+      0 1px 0 rgba(219,186,134,0.16) inset,
+      0 2px 8px rgba(32,27,20,0.12),
+      0 8px 24px rgba(32,27,20,0.08);
+    color:var(--cream);
+    position:relative;
+    overflow:hidden;
+  }
+  .calendar-card::before {
+    content:'';
+    position:absolute;
+    top:-60px;
+    right:-60px;
+    width:160px;
+    height:160px;
+    background:radial-gradient(circle, var(--gold-bright), transparent 70%);
+    opacity:0.07;
+    pointer-events:none;
+  }
+  .calendar-card::after {
+    content:'';
+    position:absolute;
+    bottom:0;
+    left:14px;
+    right:14px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+    opacity:0.32;
+  }
+  .cal-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+    gap:12px;
+  }
+  .cal-brand {
+    font-size:9px;
+    letter-spacing:3.2px;
+    color:var(--gold-bright);
+    text-transform:uppercase;
+    font-weight:700;
+  }
+  .cal-month-row { display:flex; align-items:center; gap:9px; }
+  .cal-nav-btn {
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(196,163,111,0.34);
+    color:var(--gold-bright);
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:inherit;
+  }
+  .cal-nav-btn:active { transform:scale(0.9); background:rgba(196,163,111,0.15); }
+  .cal-month-title {
+    font-size:15px;
+    font-weight:700;
+    color:var(--cream);
+    letter-spacing:0.2px;
+    min-width:92px;
+    text-align:center;
+  }
+  .cal-month-title em {
+    font-style:normal;
+    color:var(--gold-bright);
+    font-weight:700;
+    margin-left:2px;
+  }
+  .weekdays {
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    margin-bottom:4px;
+    padding-bottom:5px;
+    border-bottom:1px solid rgba(196,163,111,0.18);
+  }
+  .weekdays div {
+    text-align:center;
+    font-size:8.5px;
+    font-weight:700;
+    color:rgba(244,234,215,0.54);
+    letter-spacing:1.2px;
+  }
+  .cal-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:1px; }
+  .cal-day {
+    height:31px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:600;
+    color:#f4ead7;
+    cursor:pointer;
+    border-radius:6px;
+    position:relative;
+  }
+  .cal-day.other { color:rgba(244,234,215,0.28); font-weight:600; }
+  .cal-day.today {
+    background:rgba(138,168,196,0.52);
+    color:#fff;
+    font-weight:700;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.52), 0 1px 4px rgba(14,42,71,0.2);
+  }
+  .cal-day.selected:not(.today) {
+    background:rgba(255,255,255,0.12);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.58);
+  }
+  .cal-num { font-size:13px; line-height:1; }
+  .cal-dots {
+    display:flex;
+    gap:2px;
+    height:4px;
+    margin-top:3px;
+    justify-content:center;
+  }
+  .cal-dot {
+    width:3.5px;
+    height:3.5px;
+    border-radius:50%;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.16);
+  }
+
+  .columns {
+    display:grid;
+    grid-template-columns:65% 35%;
+    border:1.3px solid rgba(22,69,111,0.36);
+    border-radius:6px;
+    background:rgba(255,255,255,0.72);
+    box-shadow:
+      0 1px 2px rgba(32,27,20,0.05),
+      0 6px 18px rgba(32,27,20,0.05);
+    overflow:hidden;
+  }
+  .col { padding:10px 10px 13px; position:relative; min-width:0; }
+  .col + .col { border-left:1.3px solid rgba(22,69,111,0.36); }
+  .col-header {
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    letter-spacing:0.7px;
+    text-transform:uppercase;
+    padding-bottom:6px;
+    margin-bottom:8px;
+    border-bottom:1.3px solid var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .col-header em {
+    font-style:normal;
+    color:var(--gold-deep);
+    font-size:11px;
+    font-weight:700;
+  }
+  .header-action {
+    border:1px solid var(--line);
+    background:rgba(255,255,255,0.74);
+    color:var(--navy);
+    border-radius:7px;
+    padding:3px 6px;
+    font-size:8.5px;
+    font-weight:800;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    display:none;
+  }
+  .col-section { margin-bottom:9px; }
+  .col-section-title {
+    font-size:10px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+    padding-bottom:3px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
+  }
+  .col-section-title .date-label {
+    color:var(--ink);
+    font-size:10px;
+    font-weight:600;
+    letter-spacing:0.1px;
+    text-transform:none;
+  }
+  .col-section-title .date-label .today-tag {
+    color:var(--gold-deep);
+    font-weight:600;
+    font-size:9px;
+    margin-left:3px;
+  }
+  .col-section-title .meta {
+    font-size:8px;
+    color:var(--ink-faint);
+    font-weight:700;
+    letter-spacing:0.8px;
+  }
+
+  .todo-row {
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+    padding:3px 0;
+    cursor:pointer;
+    min-height:21px;
+  }
+  .todo-check {
+    width:12px;
+    height:12px;
+    border:1.2px solid var(--ink-soft);
+    border-radius:3px;
+    flex-shrink:0;
+    margin-top:2px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,0.45);
+    position:relative;
+  }
+  .todo-check.high { border-color:var(--gold-deep); border-width:1.5px; }
+  .todo-check.medium { border-color:var(--c-finance); }
+  .todo-row.done .todo-check { background:var(--navy); border-color:var(--navy); }
+  .todo-row.done .todo-check::after {
+    content:'✓';
+    color:var(--gold-bright);
+    font-size:8px;
+    font-weight:700;
+    line-height:1;
+  }
+  .todo-body { flex:1; min-width:0; }
+  .todo-text {
+    font-size:10.5px;
+    color:var(--ink);
+    line-height:1.28;
+    font-weight:500;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    letter-spacing:0;
+  }
+  .todo-row.done .todo-text {
+    text-decoration:line-through;
+    color:var(--ink-faint);
+    font-style:normal;
+  }
+  .todo-tags {
+    display:flex;
+    gap:4px;
+    margin-top:1px;
+    align-items:center;
+    font-size:7.5px;
+    color:var(--ink-faint);
+    flex-wrap:wrap;
+    font-weight:600;
+  }
+  .todo-tags .pill {
+    padding:0 4px;
+    border-radius:2px;
+    background:rgba(196,163,111,0.15);
+    color:var(--ink-mid);
+    font-size:7px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    font-weight:700;
+  }
+  .todo-tags .pill.work { background:rgba(31,85,148,0.1); color:var(--c-work); }
+  .todo-tags .pill.health { background:rgba(45,110,72,0.1); color:var(--c-health); }
+  .todo-tags .pill.finance { background:rgba(157,100,47,0.1); color:var(--c-finance); }
+  .todo-tags .pill.urgent { background:rgba(141,60,52,0.1); color:var(--c-urgent); }
+  .todo-tags .icon-tag { font-size:8px; opacity:0.8; }
+
+  .ledger-section-head {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:3px;
+    padding-bottom:3px;
+    border-bottom:1px solid var(--line);
+  }
+  .ledger-section-head .lbl {
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+  .ledger-section-head .lbl.in { color:var(--c-health); }
+  .ledger-section-head .lbl.out { color:var(--ink); }
+  .ledger-section-head .count {
+    display:none;
+  }
+  .ledger-row {
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 0;
+    border-bottom:1px dotted rgba(126,146,164,0.32);
+    cursor:pointer;
+    min-height:24px;
+  }
+  .ledger-row:last-child { border-bottom:none; }
+  .ledger-row.overdue {
+    background:transparent;
+    border-left:none;
+    margin-left:0;
+    padding-left:0;
+    border-radius:0;
+  }
+  .ledger-mark {
+    width:3px;
+    align-self:stretch;
+    border-radius:2px;
+    flex-shrink:0;
+    min-height:20px;
+    opacity:0.82;
+  }
+  .ledger-mark.in { background:var(--c-health); }
+  .ledger-mark.out { background:var(--gold-deep); }
+  .ledger-info {
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+  .ledger-name {
+    font-size:10.3px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.16;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    letter-spacing:0;
+  }
+  .ledger-top {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:7px;
+    min-width:0;
+  }
+  .ledger-amount-row {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:7px;
+    flex-wrap:nowrap;
+    min-width:0;
+  }
+  .ledger-amount {
+    font-size:11px;
+    font-weight:700;
+    line-height:1.05;
+    letter-spacing:0;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .ledger-amount.in { color:var(--c-health); }
+  .ledger-amount.out { color:var(--gold-deep); }
+  .ledger-meta-line {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    min-width:0;
+    margin-top:2px;
+  }
+  .ledger-due-mini,
+  .ledger-move-mini {
+    font-size:7.8px;
+    color:var(--ink-faint);
+    font-style:normal;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .ledger-due-mini.overdue {
+    color:var(--ink-faint);
+    font-weight:600;
+    font-size:7.8px;
+  }
+  .ledger-row.settled .ledger-name,
+  .ledger-row.settled .ledger-amount {
+    text-decoration:line-through;
+    color:var(--ink-faint);
+    font-style:normal;
+    text-decoration-thickness:1.1px;
+  }
+  .ledger-row.settled .ledger-mark { opacity:0.3; }
+  .ledger-check {
+    width:14px;
+    height:14px;
+    flex-shrink:0;
+    border:1.2px solid var(--ink-soft);
+    border-radius:4px;
+    background:rgba(255,255,255,0.5);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    position:relative;
+  }
+  .ledger-check::after {
+    content:'';
+    position:absolute;
+    width:8px;
+    height:4px;
+    border-left:1.7px solid transparent;
+    border-bottom:1.7px solid transparent;
+    transform:rotate(-45deg) translate(1px, -1px);
+  }
+  .ledger-row.settled .ledger-check {
+    background:var(--navy);
+    border-color:var(--navy);
+  }
+  .ledger-row.settled .ledger-check::after {
+    border-left-color:var(--gold-bright);
+    border-bottom-color:var(--gold-bright);
+  }
+  .ledger-row.overdue .ledger-check {
+    border-color:var(--ink-soft);
+    border-width:1.2px;
+    animation:none;
+  }
+
+  .empty-mini {
+    text-align:center;
+    padding:7px 4px;
+    color:var(--ink-faint);
+    font-style:normal;
+    font-size:11px;
+    opacity:0.75;
+  }
+  .day-detail {
+    margin-top:10px;
+    margin-bottom:14px;
+    padding:9px 11px;
+    background:rgba(255,255,255,0.72);
+    border:1px dashed var(--line);
+    border-radius:6px;
+    display:none;
+  }
+  .day-detail.show { display:block; animation:slideDown 0.2s ease; }
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(-4px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .day-detail-h {
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:5px;
+    padding-bottom:3px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    letter-spacing:0;
+  }
+  .day-detail-h em {
+    font-style:normal;
+    color:var(--gold-deep);
+    font-size:9px;
+    font-weight:700;
+  }
+  .day-event {
+    display:flex;
+    align-items:flex-start;
+    gap:7px;
+    padding:3px 0;
+    font-size:10px;
+  }
+  .day-event-bar {
+    width:3px;
+    min-height:14px;
+    border-radius:2px;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .day-event-title { color:var(--ink); font-weight:700; line-height:1.28; }
+  .day-event-meta { font-size:8px; color:var(--ink-faint); font-style:normal; font-weight:600; }
+
+  .fab {
+    position:fixed;
+    bottom:22px;
+    right:18px;
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--navy), var(--navy-deep));
+    color:var(--gold-bright);
+    border:1.5px solid var(--gold);
+    font-size:26px;
+    font-weight:300;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:50;
+    box-shadow:
+      0 4px 14px rgba(0,0,0,0.3),
+      0 8px 28px rgba(36,56,77,0.35),
+      inset 0 1px 0 rgba(219,186,134,0.2);
+  }
+  .fab:active { transform:scale(0.92); }
+
+  .modal-bg {
+    position:fixed;
+    inset:0;
+    background:rgba(23,35,50,0.55);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    z-index:100;
+    display:none;
+    align-items:flex-end;
+  }
+  .modal-bg.show { display:flex; animation:fade 0.2s; }
+  @keyframes fade { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideUp {
+    from { transform:translateY(100%); }
+    to { transform:translateY(0); }
+  }
+  .modal {
+    background:var(--paper);
+    width:100%;
+    max-height:92vh;
+    border-radius:18px 18px 0 0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    animation:slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    box-shadow:0 -8px 40px rgba(0,0,0,0.3);
+  }
+  .modal-handle {
+    width:38px;
+    height:4px;
+    background:var(--ink-faint);
+    border-radius:2px;
+    margin:8px auto 0;
+    opacity:0.35;
+  }
+  .modal-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 18px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .modal-title {
+    font-size:18px;
+    font-weight:800;
+    color:var(--ink);
+    letter-spacing:0;
+  }
+  .m-btn {
+    background:none;
+    border:none;
+    font-size:13px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-weight:700;
+    padding:4px 6px;
+    font-family:inherit;
+  }
+  .m-btn.primary { color:var(--navy); font-weight:800; }
+  .modal-body { padding:14px 18px 30px; }
+  .type-grid {
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .type-opt {
+    padding:12px 6px;
+    border:1.4px solid var(--line);
+    border-radius:8px;
+    background:rgba(255,255,255,0.42);
+    text-align:center;
+    cursor:pointer;
+  }
+  .type-opt.sel { background:var(--navy); color:var(--gold-bright); border-color:var(--gold); }
+  .type-icon { font-size:17px; margin-bottom:3px; line-height:1; }
+  .type-label { font-size:9px; font-weight:800; letter-spacing:0.8px; text-transform:uppercase; }
+  .field { margin-bottom:12px; }
+  .field-label {
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:1.4px;
+    color:var(--ink-faint);
+    margin-bottom:6px;
+    font-weight:800;
+  }
+  .input {
+    width:100%;
+    padding:10px 12px;
+    background:rgba(255,255,255,0.55);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:14px;
+    color:var(--ink);
+    font-family:inherit;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .input:focus { outline:none; border-color:var(--gold); background:white; }
+  .input::placeholder { color:var(--ink-faint); font-style:normal; }
+  textarea.input { resize:none; min-height:60px; }
+  .row {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:rgba(255,255,255,0.42);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:10px 12px;
+    margin-bottom:6px;
+  }
+  .row-label {
+    font-size:13px;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex:1;
+    font-weight:600;
+  }
+  .row-icon {
+    width:22px;
+    height:22px;
+    border-radius:5px;
+    background:var(--navy);
+    color:var(--gold-bright);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    flex-shrink:0;
+  }
+  .row .input { padding:5px 8px; font-size:12px; max-width:55%; }
+  .toggle {
+    width:38px;
+    height:22px;
+    background:var(--line);
+    border-radius:11px;
+    position:relative;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .toggle::after {
+    content:'';
+    position:absolute;
+    top:2px;
+    left:2px;
+    width:18px;
+    height:18px;
+    background:white;
+    border-radius:50%;
+    transition:transform 0.2s;
+    box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on { background:var(--navy); }
+  .toggle.on::after { transform:translateX(16px); }
+  .chip-grid { display:flex; flex-wrap:wrap; gap:5px; }
+  .chip {
+    padding:6px 10px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    font-size:11px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    background:rgba(255,255,255,0.42);
+    font-weight:700;
+  }
+  .chip.sel { background:var(--navy); color:var(--gold-bright); border-color:var(--navy); }
+  .prio-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; }
+  .prio {
+    padding:8px 4px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:rgba(255,255,255,0.42);
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-weight:700;
+  }
+  .prio.sel { border-color:var(--gold); background:rgba(196,163,111,0.2); color:var(--ink); font-weight:800; }
+  .colors { display:flex; gap:8px; flex-wrap:wrap; }
+  .color-dot {
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    cursor:pointer;
+    border:2px solid transparent;
+  }
+  .color-dot.sel {
+    border-color:white;
+    box-shadow:0 0 0 2px var(--navy);
+    transform:scale(1.1);
+  }
+  .group { display:none; }
+  .group.show { display:block; }
+  .ledger-summary {
+    background:linear-gradient(180deg, rgba(255,255,255,0.74), rgba(237,245,251,0.74));
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:12px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .quick-ledger-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .quick-ledger-btn {
+    border:1.5px solid var(--line);
+    background:rgba(255,255,255,0.66);
+    color:var(--ink);
+    border-radius:10px;
+    padding:14px 8px;
+    font-size:15px;
+    font-weight:800;
+  }
+  .quick-ledger-btn.sel {
+    background:linear-gradient(135deg, var(--navy), var(--navy-deep));
+    color:#fff;
+    border-color:var(--navy);
+  }
+  .ledger-summary-name {
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.2;
+  }
+  .ledger-summary-sub {
+    font-size:9px;
+    font-weight:600;
+    color:var(--ink-faint);
+    margin-top:2px;
+  }
+  .ledger-summary-amount {
+    font-size:16px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+    color:var(--navy);
+    white-space:nowrap;
+  }
+  .history-list {
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    background:rgba(255,255,255,0.62);
+  }
+  .history-row {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:7px 9px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .history-row:last-child { border-bottom:none; }
+  .history-main {
+    min-width:0;
+  }
+  .history-title {
+    font-size:10.5px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.25;
+  }
+  .history-meta {
+    font-size:8.5px;
+    font-weight:600;
+    color:var(--ink-faint);
+    margin-top:2px;
+  }
+  .history-amount {
+    font-size:10.8px;
+    font-weight:800;
+    white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .history-side {
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:3px;
+  }
+  .history-delete {
+    border:none;
+    background:transparent;
+    color:var(--ink-faint);
+    font-size:8px;
+    font-weight:800;
+    text-transform:uppercase;
+    padding:0;
+  }
+  .detail-save {
+    width:100%;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(135deg, var(--navy), var(--navy-deep));
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    padding:12px;
+    margin:4px 0 14px;
+  }
+  .page::-webkit-scrollbar, .modal::-webkit-scrollbar { width:0; }
+  .page-inner > * { animation:rise 0.35s ease backwards; }
+  .page-inner > *:nth-child(1) { animation-delay:0.04s; }
+  .page-inner > *:nth-child(2) { animation-delay:0.1s; }
+  .page-inner > *:nth-child(3) { animation-delay:0.15s; }
+  @keyframes rise {
+    from { opacity:0; transform:translateY(8px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status-bar">
+    <span id="clock">9:41</span>
+  </div>
+
+  <main class="page">
+    <div class="page-inner">
+      <section class="calendar-card">
+        <div class="cal-header">
+          <div class="cal-brand">Takvim</div>
+          <div class="cal-month-row">
+            <button class="cal-nav-btn" id="prevM" aria-label="Önceki ay">‹</button>
+            <div class="cal-month-title" id="monthTitle">Mayıs <em>2026</em></div>
+            <button class="cal-nav-btn" id="nextM" aria-label="Sonraki ay">›</button>
+          </div>
+        </div>
+        <div class="weekdays">
+          <div>PT</div><div>SA</div><div>ÇA</div><div>PE</div><div>CU</div><div>CT</div><div>PZ</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </section>
+
+      <div class="day-detail" id="dayDetail">
+        <div class="day-detail-h">
+          <span id="dayDetailDate">Bugün</span>
+          <em id="dayDetailMeta"></em>
+        </div>
+        <div id="dayDetailBody"></div>
+      </div>
+
+      <section class="columns">
+        <div class="col">
+          <div class="col-header">
+            Yapılacaklar
+            <em>•</em>
+          </div>
+          <div id="todoColumns"></div>
+        </div>
+
+        <div class="col">
+          <div class="col-header">
+            Borç · Alacak
+            <button class="header-action" id="undoLedgerBtn" type="button">Geri al</button>
+          </div>
+          <div id="ledgerCol"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <button class="fab" id="fab" aria-label="Yeni kayıt">+</button>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <button class="m-btn" id="cancel">İptal</button>
+      <div class="modal-title" id="mTitle">Yeni Kayıt</div>
+      <button class="m-btn primary" id="save">Kaydet</button>
+    </div>
+    <div class="modal-body">
+      <div class="type-grid" id="typeSel">
+        <div class="type-opt sel" data-type="todo">
+          <div class="type-icon">✓</div>
+          <div class="type-label">Yapılacak</div>
+        </div>
+        <div class="type-opt" data-type="event">
+          <div class="type-icon">◷</div>
+          <div class="type-label">Etkinlik</div>
+        </div>
+        <div class="type-opt" data-type="ledger">
+          <div class="type-icon">₺</div>
+          <div class="type-label">Borç/Alacak</div>
+        </div>
+      </div>
+
+      <div class="field" id="titleField">
+        <input type="text" class="input" id="titleIn" placeholder="Başlık">
+      </div>
+      <div class="field">
+        <textarea class="input" id="notesIn" placeholder="Not (isteğe bağlı)"></textarea>
+      </div>
+
+      <div class="group show" id="todoGroup">
+        <div class="field">
+          <div class="field-label">Tarih ve Saat</div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">📅</span> Tarih</div>
+            <input type="date" class="input" id="todoDate">
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">⏰</span> Saat</div>
+            <input type="time" class="input" id="todoTime">
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">🔔</span> Hatırlatma</div>
+            <div class="toggle" id="remToggle"></div>
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">📍</span> Konum</div>
+            <input type="text" class="input" id="locIn" placeholder="opsiyonel">
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">🚩</span> Öncelikli</div>
+            <div class="toggle" id="flagToggle"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Öncelik</div>
+          <div class="prio-grid" id="prioSel">
+            <div class="prio sel" data-p="none">Yok</div>
+            <div class="prio" data-p="low">Düşük</div>
+            <div class="prio" data-p="medium">Orta</div>
+            <div class="prio" data-p="high">Yüksek</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Tekrar</div>
+          <div class="chip-grid" id="recSel">
+            <div class="chip sel" data-r="none">Tekrar yok</div>
+            <div class="chip" data-r="daily">Her gün</div>
+            <div class="chip" data-r="weekly">Her hafta</div>
+            <div class="chip" data-r="biweekly">2 haftada</div>
+            <div class="chip" data-r="monthly">Her ay</div>
+            <div class="chip" data-r="yearly">Her yıl</div>
+            <div class="chip" data-r="weekdays">Hafta içi</div>
+            <div class="chip" data-r="weekends">Hafta sonu</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Kategori</div>
+          <div class="chip-grid" id="catSel">
+            <div class="chip sel" data-c="personal">Kişisel</div>
+            <div class="chip" data-c="work">İş</div>
+            <div class="chip" data-c="health">Sağlık</div>
+            <div class="chip" data-c="finance">Finans</div>
+            <div class="chip" data-c="urgent">Acil</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Renk</div>
+          <div class="colors" id="colSel">
+            <div class="color-dot sel" style="background:var(--c-personal)" data-col="personal"></div>
+            <div class="color-dot" style="background:var(--c-work)" data-col="work"></div>
+            <div class="color-dot" style="background:var(--c-health)" data-col="health"></div>
+            <div class="color-dot" style="background:var(--c-finance)" data-col="finance"></div>
+            <div class="color-dot" style="background:var(--c-urgent)" data-col="urgent"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" id="eventGroup">
+        <div class="field">
+          <div class="field-label">Zaman</div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">📅</span> Başlangıç</div>
+            <input type="datetime-local" class="input" id="evStart">
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">⏱</span> Bitiş</div>
+            <input type="datetime-local" class="input" id="evEnd">
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">🌐</span> Tüm Gün</div>
+            <div class="toggle" id="allDayToggle"></div>
+          </div>
+          <div class="row">
+            <div class="row-label"><span class="row-icon">📍</span> Yer</div>
+            <input type="text" class="input" id="evLoc" placeholder="opsiyonel">
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Tekrar</div>
+          <div class="chip-grid" id="evRecSel">
+            <div class="chip sel" data-r="none">Yok</div>
+            <div class="chip" data-r="daily">Her gün</div>
+            <div class="chip" data-r="weekly">Her hafta</div>
+            <div class="chip" data-r="monthly">Her ay</div>
+            <div class="chip" data-r="yearly">Her yıl</div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Renk</div>
+          <div class="colors" id="evColSel">
+            <div class="color-dot sel" style="background:var(--c-work)" data-col="work"></div>
+            <div class="color-dot" style="background:var(--c-personal)" data-col="personal"></div>
+            <div class="color-dot" style="background:var(--c-health)" data-col="health"></div>
+            <div class="color-dot" style="background:var(--c-finance)" data-col="finance"></div>
+            <div class="color-dot" style="background:var(--c-urgent)" data-col="urgent"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" id="ledgerGroup">
+        <div class="field">
+          <div class="field-label">İşlem</div>
+          <div class="type-grid" id="lmSel" style="grid-template-columns:1fr 1fr;">
+            <div class="type-opt sel" data-lm="in_add">
+              <div class="type-icon">+</div>
+              <div class="type-label">Alacak Ekle</div>
+            </div>
+            <div class="type-opt" data-lm="in_sub">
+              <div class="type-icon">−</div>
+              <div class="type-label">Tahsilat</div>
+            </div>
+            <div class="type-opt" data-lm="out_add">
+              <div class="type-icon">+</div>
+              <div class="type-label">Borç Ekle</div>
+            </div>
+            <div class="type-opt" data-lm="out_sub">
+              <div class="type-icon">−</div>
+              <div class="type-label">Ödeme Düş</div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Kişi / Kurum</div>
+          <input type="text" class="input" id="lPerson" placeholder="Örn. Ali Bey">
+        </div>
+        <div class="field">
+          <div class="field-label">Tutar (₺)</div>
+          <input type="number" class="input" id="lAmount" placeholder="0">
+        </div>
+        <div class="field">
+          <div class="field-label">Vade Tarihi (opsiyonel)</div>
+          <input type="date" class="input" id="lDue">
+        </div>
+        <div class="row">
+          <div class="row-label"><span class="row-icon">🔔</span> Vade Hatırlatma</div>
+          <div class="toggle on" id="lRem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="ledgerDetail">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <button class="m-btn" id="ledgerDetailClose">Kapat</button>
+      <div class="modal-title">Hesap</div>
+      <button class="m-btn primary" id="ledgerDetailUndo">Geri Al</button>
+    </div>
+    <div class="modal-body">
+      <div class="ledger-summary">
+        <div>
+          <div class="ledger-summary-name" id="detailPerson">Kişi</div>
+          <div class="ledger-summary-sub" id="detailMeta">0 hareket</div>
+        </div>
+        <div class="ledger-summary-amount" id="detailBalance">0 ₺</div>
+      </div>
+
+      <div class="quick-ledger-grid" id="detailQuickSel">
+        <button class="quick-ledger-btn sel" type="button" data-act="add">Ekle</button>
+        <button class="quick-ledger-btn" type="button" data-act="sub">Düş</button>
+      </div>
+      <div class="field">
+        <div class="field-label">Tutar (₺)</div>
+        <input type="number" class="input" id="detailAmount" placeholder="0">
+      </div>
+      <button class="detail-save" id="detailSaveBtn">Kaydet</button>
+
+      <div class="field">
+        <div class="field-label">Geçmiş</div>
+        <div class="history-list" id="ledgerHistory"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'ajanda_v6_premium';
+  const MAX_PER_DAY = 5;
+  const MAX_LEDGER_PER_COL = 10;
+
+  function ds(off=0) {
+    const d = new Date();
+    d.setDate(d.getDate()+off);
+    return d.toISOString().split('T')[0];
+  }
+
+  let state = {
+    todos: [
+      { id:1, title:'Toplantı notlarını derle', date:ds(0), time:'14:00', reminder:true, priority:'high', recurrence:'none', category:'work', color:'work', done:false },
+      { id:2, title:'Spor - koşu', date:ds(0), time:'18:30', reminder:false, priority:'medium', recurrence:'weekdays', category:'health', color:'health', done:true },
+      { id:5, title:'Anneye telefon', date:ds(0), reminder:true, priority:'none', recurrence:'weekly', category:'personal', color:'personal', done:false },
+      { id:3, title:'Kahvaltı planı', date:ds(1), time:'10:00', reminder:true, priority:'low', recurrence:'weekly', category:'personal', color:'personal', done:false },
+      { id:6, title:'Market alışverişi', date:ds(1), reminder:false, priority:'low', recurrence:'none', category:'personal', color:'personal', done:false },
+      { id:4, title:'Fatura ödemeleri', date:ds(3), time:'09:00', reminder:true, priority:'medium', recurrence:'monthly', category:'finance', color:'finance', done:false },
+    ],
+    events: [
+      { id:100, title:'Diş randevusu', start:ds(2)+'T11:00', end:ds(2)+'T12:00', color:'health' },
+      { id:101, title:'Aile yemeği', start:ds(5)+'T19:00', end:ds(5)+'T22:00', color:'personal' },
+    ],
+    ledger: [
+      { id:200, ltype:'in', movement:'add', person:'Mehmet K.', amount:2500, due:ds(7), reminder:true, settled:false },
+      { id:206, ltype:'in', movement:'sub', person:'Mehmet K.', amount:500, due:ds(0), reminder:false, settled:false },
+      { id:201, ltype:'out', movement:'add', person:'Ayşe Y.', amount:800, due:ds(3), reminder:true, settled:false },
+      { id:202, ltype:'in', movement:'add', person:'Şirket Faturası', amount:5400, due:ds(12), reminder:true, settled:false },
+      { id:203, ltype:'out', movement:'add', person:'Kira', amount:18000, due:ds(-2), reminder:true, settled:false },
+      { id:204, ltype:'in', movement:'add', person:'Ali Demir', amount:1200, due:ds(5), reminder:true, settled:false },
+      { id:205, ltype:'out', movement:'add', person:'Selim Bey', amount:450, due:ds(10), reminder:false, settled:false },
+    ],
+    currentDate: new Date(),
+    selectedDate: new Date(),
+    formState: {},
+    activeLedgerKey: null,
+    detailAction: 'add',
+    detailLedgerSide: 'in',
+    undo: []
+  };
+
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s) {
+      state.todos = s.todos || state.todos;
+      state.events = s.events || state.events;
+      state.ledger = s.ledger || state.ledger;
+      state.undo = s.undo || [];
+    }
+  } catch(e) {}
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        todos: state.todos,
+        events: state.events,
+        ledger: state.ledger,
+        undo: state.undo
+      }));
+    } catch(e) {}
+  }
+
+  function defaultForm() {
+    return {
+      type:'todo',
+      priority:'none',
+      recurrence:'none',
+      category:'personal',
+      color:'personal',
+      reminder:false,
+      flag:false,
+      allDay:false,
+      ltype:'in',
+      ledgerMode:'in_add',
+      lRem:true,
+      eventColor:'work',
+      evRec:'none'
+    };
+  }
+
+  function tick() {
+    const d = new Date();
+    const h = d.getHours().toString().padStart(2,'0');
+    const m = d.getMinutes().toString().padStart(2,'0');
+    document.getElementById('clock').textContent = `${h}:${m}`;
+  }
+  tick();
+  setInterval(tick, 30000);
+
+  const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  const DAYS = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+
+  function fullDateLabel(d) {
+    return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function dayName(d) {
+    return DAYS[d.getDay()];
+  }
+
+  function renderCal() {
+    const cur = state.currentDate;
+    document.getElementById('monthTitle').innerHTML = `${MONTHS[cur.getMonth()]} <em>${cur.getFullYear()}</em>`;
+    const y = cur.getFullYear();
+    const m = cur.getMonth();
+    const firstDay = new Date(y, m, 1);
+    const last = new Date(y, m+1, 0).getDate();
+    let fw = firstDay.getDay();
+    fw = fw === 0 ? 6 : fw - 1;
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    const prevLast = new Date(y, m, 0).getDate();
+    for (let i = fw - 1; i >= 0; i--) {
+      grid.appendChild(makeCell(prevLast - i, true, new Date(y, m-1, prevLast - i)));
+    }
+
+    const today = new Date();
+    for (let d = 1; d <= last; d++) {
+      const dt = new Date(y, m, d);
+      const isT = dt.toDateString() === today.toDateString();
+      const isS = dt.toDateString() === state.selectedDate.toDateString();
+      grid.appendChild(makeCell(d, false, dt, isT, isS));
+    }
+
+    const total = grid.children.length;
+    const rem = (7 - (total % 7)) % 7;
+    for (let i = 1; i <= rem; i++) {
+      grid.appendChild(makeCell(i, true, new Date(y, m+1, i)));
+    }
+    renderDayDetail();
+  }
+
+  function makeCell(num, isOther, date, isT=false, isS=false) {
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    if (isOther) el.classList.add('other');
+    if (isT) el.classList.add('today');
+    if (isS && !isT) el.classList.add('selected');
+    const dsv = date.toISOString().split('T')[0];
+    const items = getDayItems(dsv);
+    el.innerHTML = `<div class="cal-num">${num}</div>`;
+    if (items.length > 0) {
+      const dots = document.createElement('div');
+      dots.className = 'cal-dots';
+      [...new Set(items.map(dotCategory))].slice(0, 4).forEach(c => {
+        const dot = document.createElement('span');
+        dot.className = 'cal-dot';
+        dot.style.background = `var(--c-${c})`;
+        dots.appendChild(dot);
+      });
+      el.appendChild(dots);
+    }
+    el.addEventListener('click', () => {
+      state.selectedDate = date;
+      if (isOther) state.currentDate = new Date(date.getFullYear(), date.getMonth(), 1);
+      renderCal();
+    });
+    return el;
+  }
+
+  function getDayItems(dsv) {
+    const items = [];
+    state.todos.forEach(t => { if (matchesDate(t, dsv)) items.push({...t, _kind:'todo', color:t.color || t.category || 'todo'}); });
+    state.events.forEach(e => { if (e.start && e.start.split('T')[0] === dsv) items.push({...e, _kind:'event'}); });
+    state.ledger.forEach(l => {
+      if (!l.settled && l.due === dsv) {
+        const amount = Math.abs(ledgerDelta(l));
+        items.push({
+          title:`${l.person} ödeme`,
+          time:'',
+          color:'payment',
+          category:'payment',
+          amount,
+          _kind:'payment'
+        });
+      }
+    });
+    return items;
+  }
+
+  function dotCategory(item) {
+    const c = item.color || item.category || 'todo';
+    if (item._kind === 'payment' || c === 'payment') return 'payment';
+    if (c === 'work' || c === 'finance' || c === 'urgent') return c;
+    return 'todo';
+  }
+
+  function matchesDate(t, dsv) {
+    if (!t.date) return false;
+    if (!t.recurrence || t.recurrence === 'none') return t.date === dsv;
+    const start = new Date(t.date);
+    const target = new Date(dsv);
+    if (target < start) return false;
+    const diff = Math.floor((target - start) / 86400000);
+    switch(t.recurrence) {
+      case 'daily': return true;
+      case 'weekly': return diff % 7 === 0;
+      case 'biweekly': return diff % 14 === 0;
+      case 'monthly': return target.getDate() === start.getDate();
+      case 'yearly': return target.getDate() === start.getDate() && target.getMonth() === start.getMonth();
+      case 'weekdays': { const d = target.getDay(); return d >= 1 && d <= 5; }
+      case 'weekends': { const d = target.getDay(); return d === 0 || d === 6; }
+      default: return t.date === dsv;
+    }
+  }
+
+  function renderDayDetail() {
+    const sel = state.selectedDate;
+    const dsv = sel.toISOString().split('T')[0];
+    const today = ds(0);
+    const isT = dsv === today;
+    const detail = document.getElementById('dayDetail');
+    const items = getDayItems(dsv);
+
+    if (isT) {
+      detail.classList.remove('show');
+      return;
+    }
+
+    detail.classList.add('show');
+    document.getElementById('dayDetailDate').textContent = fullDateLabel(sel);
+    document.getElementById('dayDetailMeta').textContent = `${dayName(sel).toLowerCase()} · ${items.length === 0 ? 'boş' : items.length + ' kayıt'}`;
+
+    const body = document.getElementById('dayDetailBody');
+    if (items.length === 0) {
+      body.innerHTML = `<div class="empty-mini" style="padding:4px;font-size:10px">Kayıt yok</div>`;
+      return;
+    }
+
+    body.innerHTML = items.map(i => {
+      const c = i.color || i.category || 'personal';
+      const time = i.time || (i.start ? i.start.split('T')[1]?.slice(0,5) : '');
+      const kindLabel = i._kind === 'payment' ? `ödeme · ${fmt(i.amount || 0)} ₺` : (i._kind === 'todo' ? (i.done ? 'tamamlandı' : 'yapılacak') : 'etkinlik');
+      return `
+        <div class="day-event">
+          <div class="day-event-bar" style="background:var(--c-${c})"></div>
+          <div>
+            <div class="day-event-title">${esc(i.title)}</div>
+            <div class="day-event-meta">${time ? time + ' · ' : ''}${kindLabel}${i.recurrence && i.recurrence !== 'none' ? ' · tekrar' : ''}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('prevM').addEventListener('click', () => {
+    state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth()-1, 1);
+    renderCal();
+  });
+  document.getElementById('nextM').addEventListener('click', () => {
+    state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth()+1, 1);
+    renderCal();
+  });
+
+  function renderTodos() {
+    const today = ds(0);
+    const tom = ds(1);
+    const todayDate = new Date();
+    const tomDate = new Date();
+    tomDate.setDate(tomDate.getDate()+1);
+    const todayAll = state.todos.filter(t => matchesDate(t, today));
+    const tomAll = state.todos.filter(t => matchesDate(t, tom));
+    const todayList = todayAll.slice(0, MAX_PER_DAY);
+    const tomList = tomAll.slice(0, MAX_PER_DAY);
+    let html = renderTodoSection(todayDate, 'bugün', `${countDone(todayAll)}/${todayAll.length}`, todayList, todayAll.length);
+    html += renderTodoSection(tomDate, 'yarın', `${countDone(tomAll)}/${tomAll.length}`, tomList, tomAll.length);
+    document.getElementById('todoColumns').innerHTML = html;
+    document.querySelectorAll('.todo-row').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = parseInt(el.dataset.id);
+        const t = state.todos.find(x => x.id === id);
+        if (t) {
+          t.done = !t.done;
+          save();
+          render();
+        }
+      });
+    });
+  }
+
+  function countDone(list) {
+    return list.filter(t => t.done).length;
+  }
+
+  function renderTodoSection(date, tagText, meta, list, total) {
+    const dateLabel = `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+    const tag = `<span class="today-tag">(${tagText})</span>`;
+    if (list.length === 0) {
+      return `
+        <div class="col-section">
+          <div class="col-section-title">
+            <span class="date-label">${dateLabel} ${tag}</span>
+            <span class="meta">BOŞ</span>
+          </div>
+          <div class="empty-mini" style="padding:4px 0;font-size:10px">Kayıt yok</div>
+        </div>
+      `;
+    }
+    const more = total > list.length ? `<div class="empty-mini" style="padding:2px 0;font-size:9px;text-align:left">+${total - list.length} kayıt daha</div>` : '';
+    return `
+      <div class="col-section">
+        <div class="col-section-title">
+          <span class="date-label">${dateLabel} ${tag}</span>
+          <span class="meta">${meta}</span>
+        </div>
+        ${list.map(renderTodoRow).join('')}
+        ${more}
+      </div>
+    `;
+  }
+
+  function renderTodoRow(t) {
+    const tags = [];
+    if (t.time) tags.push(`<span>${t.time}</span>`);
+    if (t.recurrence && t.recurrence !== 'none') tags.push(`<span class="icon-tag">↻</span>`);
+    if (t.reminder) tags.push(`<span class="icon-tag">🔔</span>`);
+    tags.push(`<span class="pill ${t.category}">${catShort(t.category)}</span>`);
+    return `
+      <div class="todo-row ${t.done?'done':''}" data-id="${t.id}">
+        <div class="todo-check ${t.priority}"></div>
+        <div class="todo-body">
+          <div class="todo-text">${esc(t.title)}</div>
+          <div class="todo-tags">${tags.join('')}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function catShort(c) {
+    return {personal:'Kiş',work:'İş',health:'Sağ',finance:'Fin',urgent:'Acil'}[c] || c;
+  }
+
+  function renderLedger() {
+    const activeGroups = ledgerGroups(state.ledger.filter(l => !l.settled));
+    const alacakAll = activeGroups.filter(g => g.balance > 0);
+    const borcAll = activeGroups.filter(g => g.balance < 0);
+    const alacak = alacakAll.slice(0, MAX_LEDGER_PER_COL);
+    const borc = borcAll.slice(0, MAX_LEDGER_PER_COL);
+
+    let html = '';
+    html += `
+      <div class="col-section">
+        <div class="ledger-section-head">
+          <span class="lbl in">Alacak</span>
+          <span class="count">${alacakAll.length}</span>
+        </div>
+        ${alacak.length ? alacak.map(renderLedgerRow).join('') : '<div class="empty-mini" style="padding:5px 0;font-size:10px">Kayıt yok</div>'}
+        ${alacakAll.length > MAX_LEDGER_PER_COL ? `<div class="empty-mini" style="padding:2px 0;font-size:9px;text-align:left">+${alacakAll.length - MAX_LEDGER_PER_COL} kişi daha</div>` : ''}
+      </div>
+    `;
+    html += `
+      <div class="col-section">
+        <div class="ledger-section-head">
+          <span class="lbl out">Borç</span>
+          <span class="count">${borcAll.length}</span>
+        </div>
+        ${borc.length ? borc.map(renderLedgerRow).join('') : '<div class="empty-mini" style="padding:5px 0;font-size:10px">Kayıt yok</div>'}
+        ${borcAll.length > MAX_LEDGER_PER_COL ? `<div class="empty-mini" style="padding:2px 0;font-size:9px;text-align:left">+${borcAll.length - MAX_LEDGER_PER_COL} kişi daha</div>` : ''}
+      </div>
+    `;
+    document.getElementById('ledgerCol').innerHTML = html;
+    updateUndoButton();
+    document.querySelectorAll('.ledger-check').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ids = (el.closest('.ledger-row').dataset.ids || '').split(',').map(Number).filter(Boolean);
+        const rows = state.ledger.filter(x => ids.includes(x.id));
+        const willSettle = rows.some(x => !x.settled);
+        pushUndo({ type:'settle-ledger', rows:rows.map(cloneLedgerRow) });
+        rows.forEach(l => {
+          l.settled = willSettle;
+          if (l.settled) l.settledDate = ds(0);
+        });
+        save();
+        render();
+      });
+    });
+    document.querySelectorAll('.ledger-row').forEach(el => {
+      let timer;
+      el.addEventListener('click', () => {
+        openLedgerDetail(el.dataset.key);
+      });
+      el.addEventListener('touchstart', () => {
+        timer = setTimeout(() => {
+          const ids = (el.dataset.ids || '').split(',').map(Number).filter(Boolean);
+          if (confirm('Bu kişiye ait hareketleri silmek istiyor musun?')) {
+            const rows = state.ledger.filter(x => ids.includes(x.id));
+            pushUndo({ type:'delete-ledger', rows:rows.map(cloneLedgerRow) });
+            state.ledger = state.ledger.filter(x => !ids.includes(x.id));
+            save();
+            render();
+          }
+        }, 600);
+      });
+      el.addEventListener('touchend', () => clearTimeout(timer));
+      el.addEventListener('touchmove', () => clearTimeout(timer));
+    });
+  }
+
+  function cloneLedgerRow(row) {
+    return JSON.parse(JSON.stringify(row));
+  }
+
+  function pushUndo(action) {
+    state.undo.push({ ...action, at:Date.now() });
+    state.undo = state.undo.slice(-30);
+  }
+
+  function updateUndoButton() {
+    const btn = document.getElementById('undoLedgerBtn');
+    if (!btn) return;
+    btn.style.display = state.undo.length ? 'inline-flex' : 'none';
+  }
+
+  function undoAction(action) {
+    if (!action) return false;
+    if (action.type === 'add-ledger') {
+      state.ledger = state.ledger.filter(l => l.id !== action.row.id);
+      return true;
+    }
+    if (action.type === 'delete-ledger' || action.type === 'settle-ledger') {
+      action.rows.forEach(row => {
+        const idx = state.ledger.findIndex(l => l.id === row.id);
+        if (idx >= 0) state.ledger[idx] = row;
+        else state.ledger.push(row);
+      });
+      return true;
+    }
+    return false;
+  }
+
+  function undoLastLedger(key=null) {
+    for (let i = state.undo.length - 1; i >= 0; i--) {
+      const action = state.undo[i];
+      const rows = action.row ? [action.row] : (action.rows || []);
+      const matches = !key || rows.some(row => ledgerKey(row) === key);
+      if (!matches) continue;
+      state.undo.splice(i, 1);
+      const ok = undoAction(action);
+      save();
+      render();
+      if (key && getLedgerEntriesByKey(key).length) openLedgerDetail(key);
+      else if (key) closeLedgerDetail();
+      return ok;
+    }
+    alert('Geri alınacak işlem yok');
+    return false;
+  }
+
+  function ledgerDelta(l) {
+    const amount = Number(l.amount) || 0;
+    const movement = l.movement || 'add';
+    const isSub = movement === 'sub' || movement === 'subtract';
+    if (l.ltype === 'in') return isSub ? -amount : amount;
+    return isSub ? amount : -amount;
+  }
+
+  function ledgerKey(l) {
+    return (l.person || '').trim().toLocaleLowerCase('tr-TR');
+  }
+
+  function ledgerGroups(entries, keepZero=false) {
+    const map = new Map();
+    entries.forEach(l => {
+      const key = ledgerKey(l);
+      if (!key) return;
+      if (!map.has(key)) {
+        map.set(key, { key, person:l.person, entries:[], balance:0, due:null });
+      }
+      const g = map.get(key);
+      g.entries.push(l);
+      g.balance += ledgerDelta(l);
+      if (l.due && (!g.due || l.due < g.due)) g.due = l.due;
+    });
+    return [...map.values()]
+      .filter(g => keepZero || Math.abs(g.balance) > 0.004)
+      .sort((a,b) => {
+        const ad = a.due || '9999';
+        const bd = b.due || '9999';
+        if (ad !== bd) return ad.localeCompare(bd);
+        return a.person.localeCompare(b.person, 'tr');
+      });
+  }
+
+  function movementLabel(l) {
+    if (l.ltype === 'in' && (l.movement || 'add') === 'add') return 'Alacak eklendi';
+    if (l.ltype === 'in') return 'Tahsilat alındı';
+    if (l.ltype === 'out' && (l.movement || 'add') === 'add') return 'Borç eklendi';
+    return 'Ödeme düşüldü';
+  }
+
+  function renderLedgerRow(g, settled=false) {
+    const today = ds(0);
+    const ltype = g.balance >= 0 ? 'in' : 'out';
+    const overdue = g.due && g.due < today && !settled;
+    const dueLabel = g.due ? formatDue(g.due) : '';
+    const sign = g.balance >= 0 ? '+' : '-';
+    const ids = g.entries.map(x => x.id).join(',');
+    const hareket = `${g.entries.length} hareket · kalan`;
+    return `
+      <div class="ledger-row ${settled?'settled':''} ${overdue?'overdue':''}" data-ids="${ids}" data-key="${esc(g.key)}">
+        <div class="ledger-mark ${ltype}"></div>
+        <div class="ledger-info">
+          <div class="ledger-top">
+            <div class="ledger-name">${esc(g.person)}</div>
+            <span class="ledger-amount ${ltype}">${sign}${fmt(Math.abs(g.balance))} ₺</span>
+          </div>
+          <div class="ledger-meta-line">
+            <span class="ledger-move-mini">${hareket}</span>
+            ${dueLabel ? `<span class="ledger-due-mini ${overdue?'overdue':''}">${dueLabel}</span>` : '<span></span>'}
+          </div>
+        </div>
+        <div class="ledger-check"></div>
+      </div>
+    `;
+  }
+
+  function formatDue(d) {
+    const today = ds(0);
+    const tom = ds(1);
+    if (d === today) return 'bugün';
+    if (d === tom) return 'yarın';
+    const date = new Date(d);
+    const ms = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+    return `${date.getDate()} ${ms[date.getMonth()]}`;
+  }
+
+  function fmt(n) {
+    return Number(n).toLocaleString('tr-TR');
+  }
+
+  const modal = document.getElementById('modal');
+  const ledgerDetail = document.getElementById('ledgerDetail');
+  document.getElementById('fab').addEventListener('click', openModal);
+  document.getElementById('cancel').addEventListener('click', closeModal);
+  document.getElementById('save').addEventListener('click', saveItem);
+  document.getElementById('undoLedgerBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    undoLastLedger();
+  });
+  document.getElementById('ledgerDetailClose').addEventListener('click', closeLedgerDetail);
+  document.getElementById('ledgerDetailUndo').addEventListener('click', () => undoLastLedger(state.activeLedgerKey));
+  document.getElementById('detailSaveBtn').addEventListener('click', saveLedgerMovement);
+  document.getElementById('detailQuickSel').addEventListener('click', e => {
+    const opt = e.target.closest('.quick-ledger-btn');
+    if (!opt) return;
+    setDetailAction(opt.dataset.act);
+  });
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
+  ledgerDetail.addEventListener('click', e => {
+    if (e.target === ledgerDetail) closeLedgerDetail();
+  });
+
+  function getLedgerEntriesByKey(key) {
+    return state.ledger.filter(l => ledgerKey(l) === key);
+  }
+
+  function openLedgerDetail(key) {
+    const entries = getLedgerEntriesByKey(key);
+    if (!entries.length) return;
+    const groups = ledgerGroups(entries, true);
+    const group = groups[0] || { key, person:entries[0].person, entries, balance:entries.reduce((sum, l) => sum + ledgerDelta(l), 0), due:null };
+    state.activeLedgerKey = key;
+    state.detailLedgerSide = group.balance < 0 ? 'out' : 'in';
+    document.getElementById('detailPerson').textContent = group.person;
+    document.getElementById('detailMeta').textContent = `${entries.length} hareket · ${state.detailLedgerSide === 'in' ? 'alacak' : 'borç'} hesabı`;
+    const balanceEl = document.getElementById('detailBalance');
+    balanceEl.textContent = `${group.balance >= 0 ? '+' : '-'}${fmt(Math.abs(group.balance))} ₺`;
+    balanceEl.style.color = group.balance >= 0 ? 'var(--c-health)' : 'var(--gold-deep)';
+    document.getElementById('detailAmount').value = '';
+    setDetailAction('add');
+    renderLedgerHistory(entries);
+    ledgerDetail.classList.add('show');
+  }
+
+  function closeLedgerDetail() {
+    ledgerDetail.classList.remove('show');
+    state.activeLedgerKey = null;
+  }
+
+  function setDetailAction(action) {
+    state.detailAction = action || 'add';
+    document.querySelectorAll('#detailQuickSel .quick-ledger-btn').forEach(o => {
+      o.classList.toggle('sel', o.dataset.act === state.detailAction);
+    });
+  }
+
+  function renderLedgerHistory(entries) {
+    const body = document.getElementById('ledgerHistory');
+    const sorted = [...entries].sort((a,b) => (b.createdDate || b.due || '').localeCompare(a.createdDate || a.due || '') || b.id - a.id);
+    body.innerHTML = sorted.map(l => {
+      const delta = ledgerDelta(l);
+      const cls = delta >= 0 ? 'in' : 'out';
+      const date = l.due ? formatDue(l.due) : (l.createdDate ? formatDue(l.createdDate) : '');
+      return `
+        <div class="history-row">
+          <div class="history-main">
+            <div class="history-title">${movementLabel(l)}</div>
+            <div class="history-meta">${date || 'tarih yok'}${l.notes ? ' · ' + esc(l.notes) : ''}${l.settled ? ' · kapandı' : ''}</div>
+          </div>
+          <div class="history-side">
+            <div class="history-amount ledger-amount ${cls}">${delta >= 0 ? '+' : '-'}${fmt(Math.abs(delta))} ₺</div>
+            <button class="history-delete" type="button" data-id="${l.id}">Sil</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    body.querySelectorAll('.history-delete').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        deleteLedgerEntry(parseInt(btn.dataset.id));
+      });
+    });
+  }
+
+  function deleteLedgerEntry(id) {
+    const row = state.ledger.find(l => l.id === id);
+    if (!row) return;
+    if (!confirm('Bu hareket silinsin mi?')) return;
+    const key = ledgerKey(row);
+    pushUndo({ type:'delete-ledger', rows:[cloneLedgerRow(row)] });
+    state.ledger = state.ledger.filter(l => l.id !== id);
+    save();
+    render();
+    if (getLedgerEntriesByKey(key).length) openLedgerDetail(key);
+    else closeLedgerDetail();
+  }
+
+  function saveLedgerMovement() {
+    const key = state.activeLedgerKey;
+    const entries = getLedgerEntriesByKey(key);
+    if (!entries.length) return;
+    const amount = parseFloat(document.getElementById('detailAmount').value);
+    if (!amount) return alert('Tutar gerekli');
+    const row = {
+      id: Date.now(),
+      ltype: state.detailLedgerSide || 'in',
+      movement: state.detailAction === 'sub' ? 'sub' : 'add',
+      person: entries[0].person,
+      amount,
+      notes: '',
+      due: ds(0),
+      reminder: true,
+      settled: false,
+      createdDate: ds(0)
+    };
+    state.ledger.push(row);
+    pushUndo({ type:'add-ledger', row:cloneLedgerRow(row) });
+    save();
+    render();
+    openLedgerDetail(key);
+  }
+
+  function openModal() {
+    state.formState = defaultForm();
+    setType('todo');
+    document.getElementById('titleIn').value = '';
+    document.getElementById('notesIn').value = '';
+    document.getElementById('todoDate').value = state.selectedDate.toISOString().split('T')[0];
+    document.getElementById('todoTime').value = '';
+    document.getElementById('locIn').value = '';
+    document.getElementById('lPerson').value = '';
+    document.getElementById('lAmount').value = '';
+    document.getElementById('lDue').value = '';
+    document.getElementById('evLoc').value = '';
+    document.getElementById('remToggle').classList.remove('on');
+    document.getElementById('flagToggle').classList.remove('on');
+    document.getElementById('allDayToggle').classList.remove('on');
+    document.getElementById('lRem').classList.add('on');
+
+    const now = new Date();
+    const baseDate = state.selectedDate.toISOString().split('T')[0];
+    const startStr = baseDate + 'T' + ((now.getHours()+1)%24).toString().padStart(2,'0') + ':00';
+    const endStr = baseDate + 'T' + ((now.getHours()+2)%24).toString().padStart(2,'0') + ':00';
+    document.getElementById('evStart').value = startStr;
+    document.getElementById('evEnd').value = endStr;
+    resetSelections();
+    modal.classList.add('show');
+  }
+
+  function closeModal() {
+    modal.classList.remove('show');
+  }
+
+  function setType(t) {
+    state.formState.type = t;
+    document.querySelectorAll('#typeSel .type-opt').forEach(o => o.classList.toggle('sel', o.dataset.type === t));
+    document.getElementById('todoGroup').classList.toggle('show', t === 'todo');
+    document.getElementById('eventGroup').classList.toggle('show', t === 'event');
+    document.getElementById('ledgerGroup').classList.toggle('show', t === 'ledger');
+    document.getElementById('mTitle').textContent = {todo:'Yeni Yapılacak', event:'Yeni Etkinlik', ledger:'Yeni Borç/Alacak'}[t];
+    document.getElementById('titleField').style.display = t === 'ledger' ? 'none' : 'block';
+  }
+
+  document.querySelectorAll('#typeSel .type-opt').forEach(o => {
+    o.addEventListener('click', () => setType(o.dataset.type));
+  });
+
+  function bindChips(containerId, key, valKey) {
+    document.getElementById(containerId).addEventListener('click', e => {
+      const chip = e.target.closest('.chip, .prio, .color-dot, .type-opt');
+      if (!chip) return;
+      [...chip.parentElement.children].forEach(c => c.classList.remove('sel'));
+      chip.classList.add('sel');
+      state.formState[key] = chip.getAttribute(valKey);
+    });
+  }
+
+  bindChips('prioSel', 'priority', 'data-p');
+  bindChips('recSel', 'recurrence', 'data-r');
+  bindChips('catSel', 'category', 'data-c');
+  bindChips('colSel', 'color', 'data-col');
+  bindChips('evRecSel', 'evRec', 'data-r');
+  bindChips('evColSel', 'eventColor', 'data-col');
+  bindChips('lmSel', 'ledgerMode', 'data-lm');
+
+  document.getElementById('catSel').addEventListener('click', e => {
+    const c = e.target.closest('.chip');
+    if (!c) return;
+    const v = c.getAttribute('data-c');
+    state.formState.color = v;
+    document.querySelectorAll('#colSel .color-dot').forEach(x => x.classList.toggle('sel', x.getAttribute('data-col') === v));
+  });
+
+  ['remToggle','flagToggle','allDayToggle','lRem'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function() {
+      this.classList.toggle('on');
+    });
+  });
+
+  function resetSelections() {
+    document.querySelectorAll('#prioSel .prio').forEach((p,i) => p.classList.toggle('sel', i===0));
+    document.querySelectorAll('#recSel .chip').forEach((p,i) => p.classList.toggle('sel', i===0));
+    document.querySelectorAll('#catSel .chip').forEach((p,i) => p.classList.toggle('sel', i===0));
+    document.querySelectorAll('#colSel .color-dot').forEach((p,i) => p.classList.toggle('sel', i===0));
+    document.querySelectorAll('#evRecSel .chip').forEach((p,i) => p.classList.toggle('sel', i===0));
+    document.querySelectorAll('#evColSel .color-dot').forEach((p,i) => p.classList.toggle('sel', i===0));
+    document.querySelectorAll('#lmSel .type-opt').forEach((p,i) => p.classList.toggle('sel', i===0));
+  }
+
+  function saveItem() {
+    const t = state.formState.type;
+    const title = document.getElementById('titleIn').value.trim();
+    const notes = document.getElementById('notesIn').value.trim();
+    if (t === 'todo') {
+      if (!title) return alert('Başlık gerekli');
+      state.todos.push({
+        id: Date.now(),
+        title,
+        notes,
+        date: document.getElementById('todoDate').value,
+        time: document.getElementById('todoTime').value,
+        location: document.getElementById('locIn').value,
+        reminder: document.getElementById('remToggle').classList.contains('on'),
+        flag: document.getElementById('flagToggle').classList.contains('on'),
+        priority: state.formState.priority,
+        recurrence: state.formState.recurrence,
+        category: state.formState.category,
+        color: state.formState.color,
+        done: false
+      });
+    } else if (t === 'event') {
+      if (!title) return alert('Başlık gerekli');
+      state.events.push({
+        id: Date.now(),
+        title,
+        notes,
+        start: document.getElementById('evStart').value,
+        end: document.getElementById('evEnd').value,
+        allDay: document.getElementById('allDayToggle').classList.contains('on'),
+        location: document.getElementById('evLoc').value,
+        recurrence: state.formState.evRec,
+        color: state.formState.eventColor
+      });
+    } else {
+      const person = document.getElementById('lPerson').value.trim();
+      const amount = parseFloat(document.getElementById('lAmount').value);
+      if (!person || !amount) return alert('Kişi ve tutar gerekli');
+      const [ltype, movement] = (state.formState.ledgerMode || 'in_add').split('_');
+      const row = {
+        id: Date.now(),
+        ltype,
+        movement: movement === 'sub' ? 'sub' : 'add',
+        person,
+        amount,
+        notes,
+        due: document.getElementById('lDue').value || null,
+        reminder: document.getElementById('lRem').classList.contains('on'),
+        settled: false,
+        createdDate: ds(0)
+      };
+      state.ledger.push(row);
+      pushUndo({ type:'add-ledger', row:cloneLedgerRow(row) });
+    }
+    save();
+    closeModal();
+    render();
+  }
+
+  function esc(s) {
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function render() {
+    renderCal();
+    renderTodos();
+    renderLedger();
+  }
+
+  render();
+</script>
+</body>
+</html>
