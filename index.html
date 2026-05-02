@@ -77,22 +77,11 @@
     overflow-y:auto;
     overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
-    background:
-      linear-gradient(transparent 0px, transparent 25px, var(--line-soft) 25px, var(--line-soft) 26px, transparent 26px),
-      var(--paper);
-    background-size:100% 26px;
+    background:var(--paper);
     position:relative;
   }
   .page::before {
-    content:'';
-    position:absolute;
-    top:0;
-    bottom:0;
-    left:30px;
-    width:1px;
-    background:var(--margin-red);
-    opacity:0.22;
-    z-index:1;
+    display:none;
   }
   .page::after {
     content:'';
@@ -105,7 +94,7 @@
     z-index:0;
   }
   .page-inner {
-    padding:12px 14px 92px 40px;
+    padding:10px 10px 86px;
     position:relative;
     z-index:2;
     min-height:100%;
@@ -246,16 +235,16 @@
 
   .columns {
     display:grid;
-    grid-template-columns:65% 35%;
+    grid-template-columns:1fr 1fr;
     border:1.3px solid rgba(22,69,111,0.36);
     border-radius:6px;
     background:rgba(255,255,255,0.72);
     box-shadow:
       0 1px 2px rgba(32,27,20,0.05),
       0 6px 18px rgba(32,27,20,0.05);
-    overflow:hidden;
+    overflow:visible;
   }
-  .col { padding:10px 10px 13px; position:relative; min-width:0; }
+  .col { padding:9px 9px 12px; position:relative; min-width:0; }
   .col + .col { border-left:1.3px solid rgba(22,69,111,0.36); }
   .col-header {
     font-size:14px;
@@ -355,16 +344,15 @@
   }
   .todo-body { flex:1; min-width:0; }
   .todo-text {
-    font-size:10.5px;
+    font-size:11px;
     color:var(--ink);
     line-height:1.28;
     font-weight:500;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
+    overflow:visible;
+    display:block;
     letter-spacing:0;
+    overflow-wrap:anywhere;
+    word-break:normal;
   }
   .todo-row.done .todo-text {
     text-decoration:line-through;
@@ -418,12 +406,12 @@
   }
   .ledger-row {
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:5px;
-    padding:3px 0;
+    padding:3.5px 0;
     border-bottom:1px dotted rgba(126,146,164,0.32);
     cursor:pointer;
-    min-height:24px;
+    min-height:28px;
   }
   .ledger-row:last-child { border-bottom:none; }
   .ledger-row.overdue {
@@ -451,20 +439,21 @@
     gap:0;
   }
   .ledger-name {
-    font-size:10.3px;
+    font-size:11.1px;
     font-weight:600;
     color:var(--ink);
-    line-height:1.16;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    line-height:1.22;
+    white-space:normal;
+    overflow:visible;
     letter-spacing:0;
+    overflow-wrap:anywhere;
+    word-break:normal;
   }
   .ledger-top {
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
-    gap:7px;
+    gap:6px;
     min-width:0;
   }
   .ledger-amount-row {
@@ -476,7 +465,7 @@
     min-width:0;
   }
   .ledger-amount {
-    font-size:11px;
+    font-size:11.2px;
     font-weight:700;
     line-height:1.05;
     letter-spacing:0;
@@ -495,13 +484,12 @@
   }
   .ledger-due-mini,
   .ledger-move-mini {
-    font-size:7.8px;
+    font-size:8px;
     color:var(--ink-faint);
     font-style:normal;
     font-weight:600;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    white-space:normal;
+    overflow:visible;
   }
   .ledger-due-mini.overdue {
     color:var(--ink-faint);
